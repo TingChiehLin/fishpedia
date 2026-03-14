@@ -2,6 +2,7 @@ export type AquariumFish = {
   id: string;
   name: string;
   cutoutUrl: string;
+  facing?: "left" | "right";
 };
 
 const STORAGE_KEY = "fishpedia_aquarium";

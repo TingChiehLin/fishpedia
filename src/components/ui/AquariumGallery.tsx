@@ -23,16 +23,17 @@ export default function AquariumGallery() {
 
   return (
     <section className="rounded-3xl border bg-white/80 p-6 shadow-sm">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h2 className="text-2xl font-bold text-sky-800 mb-4">Fish Gallary</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {fish.map((item) => (
           <Card key={item.id} className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-lg text-blue-800">
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm text-blue-800">
                 {item.name}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="rounded-lg bg-slate-50 p-3">
+            <CardContent className="pt-0">
+              <div className="rounded-lg bg-slate-50 p-2">
                 <img
                   src={item.cutoutUrl}
                   alt={item.name}
