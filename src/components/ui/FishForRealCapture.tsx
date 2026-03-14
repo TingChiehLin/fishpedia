@@ -227,27 +227,9 @@ export default function FishForRealCapture() {
 
           {identifyResult && (
             <div className="rounded-xl border bg-white p-4">
-              <p className="text-sm text-gray-500">Detected fish</p>
               <p className="text-lg font-semibold text-blue-800">
                 {identifyResult.label}
               </p>
-              <p className="text-xs text-gray-500">
-                Confidence: {(identifyResult.score * 100).toFixed(1)}%
-              </p>
-              {identifyResult.top5?.length ? (
-                <div className="mt-3">
-                  <p className="text-sm font-semibold text-gray-700">
-                    Other guesses
-                  </p>
-                  <ul className="mt-1 space-y-1 text-sm text-gray-600">
-                    {identifyResult.top5.slice(1).map((item) => (
-                      <li key={item.label}>
-                        • {item.label} ({(item.score * 100).toFixed(1)}%)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
             </div>
           )}
         </CardContent>
