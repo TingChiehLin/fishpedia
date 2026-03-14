@@ -193,7 +193,7 @@ export default function AquariumTank() {
               <img
                 src={item.cutoutUrl}
                 alt={item.name}
-                className="h-16 w-auto drop-shadow-lg"
+                className="h-36 w-auto drop-shadow-lg"
               />
             </div>
           ))
