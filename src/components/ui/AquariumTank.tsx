@@ -6,6 +6,7 @@ import { AquariumFish, getAquariumFish } from "@/lib/aquariumStorage";
 
 export default function AquariumTank() {
   const [fish, setFish] = useState<AquariumFish[]>([]);
+  const [selectedFish, setSelectedFish] = useState<AquariumFish | null>(null);
   const tankRef = useRef<HTMLDivElement | null>(null);
   const fishRefs = useRef<HTMLDivElement[]>([]);
 
@@ -81,6 +82,14 @@ export default function AquariumTank() {
                 if (el) fishRefs.current[index] = el;
               }}
               className="aquarium-fish"
+              onClick={() => setSelectedFish(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  setSelectedFish(item);
+                }
+              }}
             >
               <img
                 src={item.cutoutUrl}
@@ -91,6 +100,42 @@ export default function AquariumTank() {
           ))
         )}
       </div>
+
+      {selectedFish && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setSelectedFish(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-sky-800">
+                  {selectedFish.name}
+                </h3>
+              </div>
+              <button
+                className="text-gray-400 hover:text-gray-600"
+                onClick={() => setSelectedFish(null)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="mt-4 rounded-xl p-4 fish-spin-wrapper">
+              <img
+                src={selectedFish.cutoutUrl}
+                alt={selectedFish.name}
+                className="w-full h-auto fish-spin-360"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
