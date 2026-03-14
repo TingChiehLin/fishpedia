@@ -7,12 +7,52 @@ import { AquariumFish, getAquariumFish } from "@/lib/aquariumStorage";
 export default function AquariumTank() {
   const [fish, setFish] = useState<AquariumFish[]>([]);
   const [selectedFish, setSelectedFish] = useState<AquariumFish | null>(null);
+  const [quiz, setQuiz] = useState<{
+    question: string;
+    options: string[];
+    answerIndex: number;
+  } | null>(null);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizError, setQuizError] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const tankRef = useRef<HTMLDivElement | null>(null);
   const fishRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     setFish(getAquariumFish());
   }, []);
+
+  useEffect(() => {
+    if (!selectedFish) return;
+    setQuiz(null);
+    setQuizError(null);
+    setSelectedOption(null);
+    setQuizLoading(true);
+
+    const run = async () => {
+      try {
+        const res = await fetch("/api/fish-quiz", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fishName: selectedFish.name }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          const detail = data?.details ? ` ${data.details}` : "";
+          throw new Error(`${data?.error || "Failed to load quiz"}${detail}`);
+        }
+        setQuiz(data);
+      } catch (error) {
+        setQuizError(
+          error instanceof Error ? error.message : "Failed to load quiz"
+        );
+      } finally {
+        setQuizLoading(false);
+      }
+    };
+
+    run();
+  }, [selectedFish]);
 
   const fishList = useMemo(() => fish, [fish]);
 
@@ -132,6 +172,45 @@ export default function AquariumTank() {
                 alt={selectedFish.name}
                 className="w-full h-auto fish-spin-360"
               />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {quizLoading && (
+                <p className="text-sm text-gray-500">
+                  Generating a fun fact quiz...
+                </p>
+              )}
+              {quizError && (
+                <p className="text-sm text-red-600">{quizError}</p>
+              )}
+              {quiz && (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-sky-800">
+                    {quiz.question}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {quiz.options.map((option, index) => {
+                      const isSelected = selectedOption === index;
+                      const isCorrect = quiz.answerIndex === index;
+                      return (
+                        <button
+                          key={option}
+                          onClick={() => setSelectedOption(index)}
+                          className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
+                            isSelected
+                              ? isCorrect
+                                ? "border-green-400 bg-green-50 text-green-700"
+                                : "border-red-300 bg-red-50 text-red-700"
+                              : "border-slate-200 bg-white hover:border-sky-200 hover:bg-sky-50"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
