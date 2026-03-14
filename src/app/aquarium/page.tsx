@@ -1,5 +1,4 @@
 import AquariumGallery from "@/components/ui/AquariumGallery";
-
 export default function AquariumPage() {
   return (
     <div className="space-y-8">
