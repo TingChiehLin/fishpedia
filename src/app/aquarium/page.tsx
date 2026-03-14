@@ -1,4 +1,5 @@
 import AquariumGallery from "@/components/ui/AquariumGallery";
+import AquariumTank from "@/components/ui/AquariumTank";
 export default function AquariumPage() {
   return (
     <div className="space-y-8">
@@ -10,6 +11,8 @@ export default function AquariumPage() {
           Your collected fish will appear here.
         </p>
       </header>
+
+      <AquariumTank />
 
       <AquariumGallery />
     </div>
