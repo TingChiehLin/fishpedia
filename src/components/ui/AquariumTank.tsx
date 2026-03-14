@@ -142,7 +142,7 @@ export default function AquariumTank() {
   }, [fishList]);
 
   return (
-    <section className="rounded-3xl border bg-gradient-to-b from-sky-100 via-cyan-200 to-blue-400 p-6 shadow-sm relative overflow-hidden">
+    <section className="rounded-3xl border bg-gradient-to-b from-sky-100 via-cyan-200 to-blue-400 p-6 shadow-sm relative overflow-hidden min-h-screen flex flex-col">
       <div className="absolute inset-0 opacity-40 pointer-events-none aquarium-waves" />
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -157,7 +157,7 @@ export default function AquariumTank() {
         ))}
       </div>
 
-      <div ref={tankRef} className="relative h-64">
+      <div ref={tankRef} className="relative flex-1 min-h-[70vh]">
         {fishList.length === 0 ? (
           <div className="flex h-full items-center justify-center text-white/80 text-sm">
             Add fish to see them swim here.
