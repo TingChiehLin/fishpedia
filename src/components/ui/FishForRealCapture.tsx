@@ -246,11 +246,11 @@ export default function FishForRealCapture() {
                 {identifyResult.label}
               </p>
               {cutoutUrl && (
-                <div className="mt-3 rounded-lg bg-slate-50 p-3">
+                <div className="mt-3 rounded-lg bg-slate-50 p-3 fish-spin-wrapper">
                   <img
                     src={cutoutUrl}
                     alt="Fish cutout"
-                    className="w-full h-auto"
+                    className="w-full h-auto fish-spin-360"
                   />
                 </div>
               )}
