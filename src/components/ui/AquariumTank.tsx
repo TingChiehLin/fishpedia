@@ -5,19 +5,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { gsap } from "gsap";
 import { AquariumFish, getAquariumFish } from "@/lib/aquariumStorage";
 
+type QuizQuestion = {
+  question: string;
+  options: string[];
+  answerIndex: number;
+};
+
 export default function AquariumTank() {
   const [fish, setFish] = useState<AquariumFish[]>([]);
   const [selectedFish, setSelectedFish] = useState<AquariumFish | null>(null);
-  const [quiz, setQuiz] = useState<{
-    question: string;
-    options: string[];
-    answerIndex: number;
-  } | null>(null);
+  const [quiz, setQuiz] = useState<QuizQuestion[] | null>(null);
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [heartbreakTick, setHeartbreakTick] = useState(0);
   const [loveTick, setLoveTick] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [isAdvancing, setIsAdvancing] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const tankRef = useRef<HTMLDivElement | null>(null);
   const fishRefs = useRef<HTMLDivElement[]>([]);
 
@@ -33,6 +40,11 @@ export default function AquariumTank() {
     setQuizLoading(true);
     setHeartbreakTick(0);
     setLoveTick(0);
+    setCurrentIndex(0);
+    setAnsweredCount(0);
+    setCorrectCount(0);
+    setIsAdvancing(false);
+    setIsFinished(false);
 
     const run = async () => {
       try {
@@ -46,7 +58,8 @@ export default function AquariumTank() {
           const detail = data?.details ? ` ${data.details}` : "";
           throw new Error(`${data?.error || "Failed to load quiz"}${detail}`);
         }
-        setQuiz(data);
+        const questions = Array.isArray(data?.questions) ? data.questions : [];
+        setQuiz(questions);
       } catch (error) {
         setQuizError(
           error instanceof Error ? error.message : "Failed to load quiz"
@@ -84,6 +97,10 @@ export default function AquariumTank() {
       rotate: gsap.utils.random(-45, 45),
     }));
   }, [loveTick]);
+
+  const totalQuestions = quiz?.length ?? 0;
+  const activeQuestion =
+    quiz && quiz.length > 0 ? quiz[Math.min(currentIndex, quiz.length - 1)] : null;
 
   const fishList = useMemo(() => fish, [fish]);
 
@@ -291,25 +308,52 @@ export default function AquariumTank() {
               {quizError && (
                 <p className="text-sm text-red-600">{quizError}</p>
               )}
-              {quiz && (
+              {quiz && totalQuestions === 0 && (
+                <p className="text-sm text-gray-500">
+                  No questions available right now.
+                </p>
+              )}
+              {quiz && totalQuestions > 0 && !isFinished && activeQuestion && (
                 <div className="space-y-3">
+                  <p className="text-xs font-semibold text-sky-600">
+                    {answeredCount}/{totalQuestions}
+                  </p>
                   <p className="text-sm font-semibold text-sky-800">
-                    {quiz.question}
+                    {activeQuestion.question}
                   </p>
                   <div className="grid grid-cols-1 gap-2">
-                    {quiz.options.map((option, index) => {
+                    {activeQuestion.options.map((option, index) => {
                       const isSelected = selectedOption === index;
-                      const isCorrect = quiz.answerIndex === index;
+                      const isCorrect = activeQuestion.answerIndex === index;
+                      const isLocked =
+                        isAdvancing || isFinished || selectedOption !== null;
                       return (
                         <button
                           key={option}
+                          disabled={isLocked}
                           onClick={() => {
+                            if (isLocked) return;
                             setSelectedOption(index);
-                            if (index !== quiz.answerIndex) {
-                              setHeartbreakTick((t) => t + 1);
-                            } else {
+                            const correct =
+                              index === activeQuestion.answerIndex;
+                            setAnsweredCount((count) => count + 1);
+                            if (correct) {
+                              setCorrectCount((count) => count + 1);
                               setLoveTick((t) => t + 1);
+                            } else {
+                              setHeartbreakTick((t) => t + 1);
                             }
+                            setIsAdvancing(true);
+                            window.setTimeout(() => {
+                              const nextIndex = currentIndex + 1;
+                              if (nextIndex >= totalQuestions) {
+                                setIsFinished(true);
+                              } else {
+                                setCurrentIndex(nextIndex);
+                              }
+                              setSelectedOption(null);
+                              setIsAdvancing(false);
+                            }, 1000);
                           }}
                           className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                             isSelected
@@ -317,13 +361,20 @@ export default function AquariumTank() {
                                 ? "border-green-400 bg-green-50 text-green-700"
                                 : "border-red-300 bg-red-50 text-red-700"
                               : "border-slate-200 bg-white hover:border-sky-200 hover:bg-sky-50"
-                          }`}
+                          } ${isLocked ? "cursor-not-allowed opacity-80" : ""}`}
                         >
                           {option}
                         </button>
                       );
                     })}
                   </div>
+                </div>
+              )}
+              {quiz && totalQuestions > 0 && isFinished && (
+                <div className="rounded-xl border border-sky-100 bg-sky-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-sky-800">
+                    You got {correctCount}/{totalQuestions} right!
+                  </p>
                 </div>
               )}
             </div>

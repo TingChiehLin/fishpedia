@@ -49,7 +49,7 @@ export async function POST(request: Request) {
               {
                 type: "input_text",
                 text:
-                  "You are a quiz writer for children. Create one multiple-choice question with exactly 4 options. Provide 3 true fun facts and 1 false fun fact about the fish. The question should ask which fun fact is NOT true.",
+                  "You are a quiz writer for children. Create 3 multiple-choice questions, each with exactly 4 options. Each question should include 3 true fun facts and 1 false fun fact about the fish, and ask which fun fact is NOT true.",
               },
             ],
           },
@@ -72,16 +72,28 @@ export async function POST(request: Request) {
               type: "object",
               additionalProperties: false,
               properties: {
-                question: { type: "string" },
-                options: {
+                questions: {
                   type: "array",
-                  items: { type: "string" },
-                  minItems: 4,
-                  maxItems: 4,
+                  minItems: 3,
+                  maxItems: 3,
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                      question: { type: "string" },
+                      options: {
+                        type: "array",
+                        items: { type: "string" },
+                        minItems: 4,
+                        maxItems: 4,
+                      },
+                      answerIndex: { type: "integer", minimum: 0, maximum: 3 },
+                    },
+                    required: ["question", "options", "answerIndex"],
+                  },
                 },
-                answerIndex: { type: "integer", minimum: 0, maximum: 3 },
               },
-              required: ["question", "options", "answerIndex"],
+              required: ["questions"],
             },
           },
         },
