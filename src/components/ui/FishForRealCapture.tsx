@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { addAquariumFish } from "@/lib/aquariumStorage";
 
 export default function FishForRealCapture() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -19,6 +20,7 @@ export default function FishForRealCapture() {
     top5?: { label: string; score: number }[];
   } | null>(null);
   const [cutoutUrl, setCutoutUrl] = useState<string | null>(null);
+  const [addMessage, setAddMessage] = useState<string | null>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -64,6 +66,7 @@ export default function FishForRealCapture() {
     setIdentifyResult(null);
     setIdentifyError(null);
     setCutoutUrl(null);
+    setAddMessage(null);
   };
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +78,7 @@ export default function FishForRealCapture() {
       setIdentifyResult(null);
       setIdentifyError(null);
       setCutoutUrl(null);
+      setAddMessage(null);
     };
     reader.readAsDataURL(file);
   };
@@ -85,6 +89,7 @@ export default function FishForRealCapture() {
     setIdentifyError(null);
     setIdentifyResult(null);
     setCutoutUrl(null);
+    setAddMessage(null);
     try {
       const res = await fetch("/api/fish-id", {
         method: "POST",
@@ -229,6 +234,7 @@ export default function FishForRealCapture() {
                 setIdentifyResult(null);
                 setIdentifyError(null);
                 setCutoutUrl(null);
+                setAddMessage(null);
               }}
               disabled={!previewUrl}
             >
@@ -254,8 +260,24 @@ export default function FishForRealCapture() {
                   />
                 </div>
               )}
-              <div className="mt-4">
-                <Button>+ Add to Aquarium</Button>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <Button
+                  onClick={() => {
+                    if (!identifyResult || !cutoutUrl) return;
+                    addAquariumFish({
+                      id: `${Date.now()}`,
+                      name: identifyResult.label,
+                      cutoutUrl,
+                    });
+                    setAddMessage("Added to aquarium!");
+                  }}
+                  disabled={!cutoutUrl}
+                >
+                  + Add to Aquarium
+                </Button>
+                {addMessage && (
+                  <span className="text-sm text-green-700">{addMessage}</span>
+                )}
               </div>
             </div>
           )}
