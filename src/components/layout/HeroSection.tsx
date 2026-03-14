@@ -17,16 +17,12 @@ export default function HeroSection() {
       </div>
 
       <div className="relative mx-auto max-w-6xl px-6 text-center">
-        <div className="mb-6 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-medium text-white/95 backdrop-blur-md shadow-sm">
-          🎣 Learn, Play, and Explore Nature Together
-        </div>
-
         <Image
-          src="/images/logo.png"
+          src="/images/logo.svg"
           alt="Fishpedia logo"
-          width={120}
-          height={120}
-          className="mx-auto mb-6"
+          width={256}
+          height={256}
+          className="mx-auto mb-6 w-full sm:w-24 md:w-28 lg:w-80 h-auto"
         />
 
         <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)] md:text-6xl lg:text-7xl">
@@ -54,7 +50,7 @@ export default function HeroSection() {
             variant="secondary"
             className="h-12 rounded-full border border-white/30 bg-white/10 px-8 text-white backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:bg-white/20"
           >
-            <Link href="/fish-collection">Fish Collection</Link>
+            {/* <Link href="/fish-collection">Fish Collection</Link> */}
           </Button>
         </div>
       </div>

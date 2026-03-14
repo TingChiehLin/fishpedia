@@ -9,5 +9,5 @@ export default function LayoutMain({
 }) {
   const pathname = usePathname();
 
-  return <main className={"w-full mx-auto pb-24"}>{children}</main>;
+  return <main className={"w-full mx-auto pb-24 md:pb-0"}>{children}</main>;
 }
