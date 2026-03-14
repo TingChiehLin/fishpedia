@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 export default function LayoutMain({
   children,
@@ -10,11 +9,5 @@ export default function LayoutMain({
 }) {
   const pathname = usePathname();
 
-  const isHome = pathname === "/";
-
-  return (
-    <main className={cn("w-full mx-auto pb-24", isHome ? "py-0" : "py-12")}>
-      {children}
-    </main>
-  );
+  return <main className={"w-full mx-auto pb-24"}>{children}</main>;
 }
