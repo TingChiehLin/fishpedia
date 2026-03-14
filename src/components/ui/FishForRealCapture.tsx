@@ -56,7 +56,7 @@ async function detectFishFacingFromCutout(
   dataUrl: string,
 ): Promise<FishFacing> {
   return new Promise((resolve) => {
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
       const width = img.naturalWidth || img.width;
       const height = img.naturalHeight || img.height;
@@ -230,6 +230,8 @@ export default function FishForRealCapture() {
         setCutoutUrl(cutout);
         const facing = await detectFishFacingFromCutout(cutout);
         setFishFacing(facing);
+      } else if (!cutoutRes.ok) {
+        throw new Error(cutoutData?.error || "Failed to remove background");
       }
     } catch (error) {
       setIdentifyError(
