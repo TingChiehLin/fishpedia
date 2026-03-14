@@ -5,6 +5,60 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { addAquariumFish } from "@/lib/aquariumStorage";
 
+type FishFacing = "left" | "right";
+
+async function detectFishFacingFromCutout(
+  dataUrl: string
+): Promise<FishFacing> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const width = img.naturalWidth || img.width;
+      const height = img.naturalHeight || img.height;
+      if (!width || !height) {
+        resolve("right");
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) {
+        resolve("right");
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+      const { data } = ctx.getImageData(0, 0, width, height);
+
+      let leftCount = 0;
+      let rightCount = 0;
+      const threshold = 12;
+      const mid = Math.floor(width / 2);
+
+      for (let y = 0; y < height; y += 2) {
+        const rowOffset = y * width * 4;
+        for (let x = 0; x < width; x += 2) {
+          const index = rowOffset + x * 4 + 3;
+          const alpha = data[index];
+          if (alpha > threshold) {
+            if (x < mid) {
+              leftCount += 1;
+            } else {
+              rightCount += 1;
+            }
+          }
+        }
+      }
+
+      resolve(leftCount >= rightCount ? "left" : "right");
+    };
+    img.onerror = () => resolve("right");
+    img.src = dataUrl;
+  });
+}
+
 export default function FishForRealCapture() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -21,6 +75,7 @@ export default function FishForRealCapture() {
   } | null>(null);
   const [cutoutUrl, setCutoutUrl] = useState<string | null>(null);
   const [addMessage, setAddMessage] = useState<string | null>(null);
+  const [fishFacing, setFishFacing] = useState<FishFacing | null>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -67,6 +122,7 @@ export default function FishForRealCapture() {
     setIdentifyError(null);
     setCutoutUrl(null);
     setAddMessage(null);
+    setFishFacing(null);
   };
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +135,7 @@ export default function FishForRealCapture() {
       setIdentifyError(null);
       setCutoutUrl(null);
       setAddMessage(null);
+      setFishFacing(null);
     };
     reader.readAsDataURL(file);
   };
@@ -90,6 +147,7 @@ export default function FishForRealCapture() {
     setIdentifyResult(null);
     setCutoutUrl(null);
     setAddMessage(null);
+    setFishFacing(null);
     try {
       const res = await fetch("/api/fish-id", {
         method: "POST",
@@ -113,7 +171,10 @@ export default function FishForRealCapture() {
       });
       const cutoutData = await cutoutRes.json();
       if (cutoutRes.ok && cutoutData?.imageDataUrl) {
-        setCutoutUrl(cutoutData.imageDataUrl);
+        const cutout = cutoutData.imageDataUrl as string;
+        setCutoutUrl(cutout);
+        const facing = await detectFishFacingFromCutout(cutout);
+        setFishFacing(facing);
       }
     } catch (error) {
       setIdentifyError(
@@ -235,6 +296,7 @@ export default function FishForRealCapture() {
                 setIdentifyError(null);
                 setCutoutUrl(null);
                 setAddMessage(null);
+                setFishFacing(null);
               }}
               disabled={!previewUrl}
             >
@@ -268,6 +330,7 @@ export default function FishForRealCapture() {
                       id: `${Date.now()}`,
                       name: identifyResult.label,
                       cutoutUrl,
+                      facing: fishFacing ?? "right",
                     });
                     setAddMessage("Added to aquarium!");
                   }}
