@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { gsap } from "gsap";
 import { AquariumFish, getAquariumFish } from "@/lib/aquariumStorage";
 
@@ -15,6 +16,7 @@ export default function AquariumTank() {
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [heartbreakTick, setHeartbreakTick] = useState(0);
   const tankRef = useRef<HTMLDivElement | null>(null);
   const fishRefs = useRef<HTMLDivElement[]>([]);
 
@@ -28,6 +30,7 @@ export default function AquariumTank() {
     setQuizError(null);
     setSelectedOption(null);
     setQuizLoading(true);
+    setHeartbreakTick(0);
 
     const run = async () => {
       try {
@@ -53,6 +56,19 @@ export default function AquariumTank() {
 
     run();
   }, [selectedFish]);
+
+  const heartbreakTears = useMemo(() => {
+    if (heartbreakTick === 0) return [];
+    return Array.from({ length: 30 }).map(() => ({
+      x: gsap.utils.random(-160, 160),
+      y: gsap.utils.random(-140, 160),
+      delay: gsap.utils.random(0, 0.2),
+      duration: 2,
+      size: gsap.utils.random(14, 22),
+      rotate: gsap.utils.random(-45, 45),
+    }));
+  }, [heartbreakTick]);
+  const heartbreakEmojis = ["😭", "😢", "😿", "💧", "💔"];
 
   const fishList = useMemo(() => fish, [fish]);
 
@@ -166,12 +182,53 @@ export default function AquariumTank() {
                 ✕
               </button>
             </div>
-            <div className="mt-4 rounded-xl p-4 fish-spin-wrapper">
+            <div className="mt-4 rounded-xl p-4 fish-spin-wrapper relative">
               <img
                 src={selectedFish.cutoutUrl}
                 alt={selectedFish.name}
                 className="w-full h-auto fish-spin-360"
               />
+
+              <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <AnimatePresence>
+                  {heartbreakTears.length > 0 && (
+                    <motion.div
+                      key={`burst-${heartbreakTick}`}
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="relative h-0 w-0"
+                    >
+                      {heartbreakTears.map((tear, index) => (
+                        <motion.span
+                          key={`tear-${heartbreakTick}-${index}`}
+                          initial={{ opacity: 0, scale: 0.6, x: 0, y: 0 }}
+                          animate={{
+                            opacity: [0, 1, 0],
+                            scale: [0.6, 1, 0.9],
+                            x: tear.x,
+                            y: tear.y,
+                            rotate: tear.rotate,
+                          }}
+                          transition={{
+                            duration: tear.duration,
+                            delay: tear.delay,
+                            ease: "easeOut",
+                          }}
+                          className="absolute left-0 top-0"
+                        >
+                          <span
+                            style={{ fontSize: `${tear.size}px` }}
+                            className="block drop-shadow-sm"
+                          >
+                            {heartbreakEmojis[index % heartbreakEmojis.length]}
+                          </span>
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -195,7 +252,12 @@ export default function AquariumTank() {
                       return (
                         <button
                           key={option}
-                          onClick={() => setSelectedOption(index)}
+                          onClick={() => {
+                            setSelectedOption(index);
+                            if (index !== quiz.answerIndex) {
+                              setHeartbreakTick((t) => t + 1);
+                            }
+                          }}
                           className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                             isSelected
                               ? isCorrect
@@ -212,6 +274,7 @@ export default function AquariumTank() {
                 </div>
               )}
             </div>
+
           </div>
         </div>
       )}
