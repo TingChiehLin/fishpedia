@@ -11,6 +11,13 @@ export default function FishForRealCapture() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [streamReady, setStreamReady] = useState(false);
+  const [identifyLoading, setIdentifyLoading] = useState(false);
+  const [identifyError, setIdentifyError] = useState<string | null>(null);
+  const [identifyResult, setIdentifyResult] = useState<{
+    label: string;
+    score: number;
+    top5?: { label: string; score: number }[];
+  } | null>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -53,6 +60,8 @@ export default function FishForRealCapture() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const dataUrl = canvas.toDataURL("image/png");
     setPreviewUrl(dataUrl);
+    setIdentifyResult(null);
+    setIdentifyError(null);
   };
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,8 +70,39 @@ export default function FishForRealCapture() {
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewUrl(reader.result as string);
+      setIdentifyResult(null);
+      setIdentifyError(null);
     };
     reader.readAsDataURL(file);
+  };
+
+  const identifyFish = async () => {
+    if (!previewUrl) return;
+    setIdentifyLoading(true);
+    setIdentifyError(null);
+    setIdentifyResult(null);
+    try {
+      const res = await fetch("/api/fish-id", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageDataUrl: previewUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to identify fish");
+      }
+      setIdentifyResult({
+        label: data.label,
+        score: data.score,
+        top5: data.top5,
+      });
+    } catch (error) {
+      setIdentifyError(
+        error instanceof Error ? error.message : "Unable to identify fish"
+      );
+    } finally {
+      setIdentifyLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -164,13 +204,52 @@ export default function FishForRealCapture() {
             )}
           </div>
 
-          <Button
-            variant="outline"
-            onClick={() => setPreviewUrl(null)}
-            disabled={!previewUrl}
-          >
-            Clear Preview
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={identifyFish} disabled={!previewUrl || identifyLoading}>
+              {identifyLoading ? "Identifying..." : "Identify Fish"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPreviewUrl(null);
+                setIdentifyResult(null);
+                setIdentifyError(null);
+              }}
+              disabled={!previewUrl}
+            >
+              Clear Preview
+            </Button>
+          </div>
+
+          {identifyError && (
+            <p className="text-sm text-red-600">{identifyError}</p>
+          )}
+
+          {identifyResult && (
+            <div className="rounded-xl border bg-white p-4">
+              <p className="text-sm text-gray-500">Detected fish</p>
+              <p className="text-lg font-semibold text-blue-800">
+                {identifyResult.label}
+              </p>
+              <p className="text-xs text-gray-500">
+                Confidence: {(identifyResult.score * 100).toFixed(1)}%
+              </p>
+              {identifyResult.top5?.length ? (
+                <div className="mt-3">
+                  <p className="text-sm font-semibold text-gray-700">
+                    Other guesses
+                  </p>
+                  <ul className="mt-1 space-y-1 text-sm text-gray-600">
+                    {identifyResult.top5.slice(1).map((item) => (
+                      <li key={item.label}>
+                        • {item.label} ({(item.score * 100).toFixed(1)}%)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
