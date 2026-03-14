@@ -17,6 +17,7 @@ export default function AquariumTank() {
   const [quizError, setQuizError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [heartbreakTick, setHeartbreakTick] = useState(0);
+  const [loveTick, setLoveTick] = useState(0);
   const tankRef = useRef<HTMLDivElement | null>(null);
   const fishRefs = useRef<HTMLDivElement[]>([]);
 
@@ -31,6 +32,7 @@ export default function AquariumTank() {
     setSelectedOption(null);
     setQuizLoading(true);
     setHeartbreakTick(0);
+    setLoveTick(0);
 
     const run = async () => {
       try {
@@ -69,6 +71,19 @@ export default function AquariumTank() {
     }));
   }, [heartbreakTick]);
   const heartbreakEmojis = ["😭", "😢", "😿", "💧", "💔"];
+  const loveEmojis = ["❤️", "😍", "🥰", "😘", "💋"];
+
+  const loveBursts = useMemo(() => {
+    if (loveTick === 0) return [];
+    return Array.from({ length: 30 }).map(() => ({
+      x: gsap.utils.random(-160, 160),
+      y: gsap.utils.random(-140, 160),
+      delay: gsap.utils.random(0, 0.2),
+      duration: 2,
+      size: gsap.utils.random(14, 22),
+      rotate: gsap.utils.random(-45, 45),
+    }));
+  }, [loveTick]);
 
   const fishList = useMemo(() => fish, [fish]);
 
@@ -227,6 +242,42 @@ export default function AquariumTank() {
                       ))}
                     </motion.div>
                   )}
+                  {loveBursts.length > 0 && (
+                    <motion.div
+                      key={`love-${loveTick}`}
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="relative h-0 w-0"
+                    >
+                      {loveBursts.map((tear, index) => (
+                        <motion.span
+                          key={`love-${loveTick}-${index}`}
+                          initial={{ opacity: 0, scale: 0.6, x: 0, y: 0 }}
+                          animate={{
+                            opacity: [0, 1, 0],
+                            scale: [0.6, 1, 0.9],
+                            x: tear.x,
+                            y: tear.y,
+                            rotate: tear.rotate,
+                          }}
+                          transition={{
+                            duration: tear.duration,
+                            delay: tear.delay,
+                            ease: "easeOut",
+                          }}
+                          className="absolute left-0 top-0"
+                        >
+                          <span
+                            style={{ fontSize: `${tear.size}px` }}
+                            className="block drop-shadow-sm"
+                          >
+                            {loveEmojis[index % loveEmojis.length]}
+                          </span>
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
             </div>
@@ -256,6 +307,8 @@ export default function AquariumTank() {
                             setSelectedOption(index);
                             if (index !== quiz.answerIndex) {
                               setHeartbreakTick((t) => t + 1);
+                            } else {
+                              setLoveTick((t) => t + 1);
                             }
                           }}
                           className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
