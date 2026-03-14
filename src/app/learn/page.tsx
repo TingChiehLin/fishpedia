@@ -21,19 +21,6 @@ export default async function LearnPage() {
           <FishCard key={fish.id} fish={fish} />
         ))}
       </div>
-
-      <section className="bg-blue-50 p-6 rounded-lg">
-        <h2 className="text-2xl font-bold text-blue-900 mb-4">
-          Beginner Fishing Tips
-        </h2>
-        <ul className="space-y-2 text-blue-800">
-          <li>• Always fish with an adult</li>
-          <li>• Use the right bait for the fish you're trying to catch</li>
-          <li>• Be patient and quiet while fishing</li>
-          <li>• Handle fish gently and release them if not keeping</li>
-          <li>• Respect nature and clean up after yourself</li>
-        </ul>
-      </section>
     </div>
   );
 }
