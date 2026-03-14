@@ -1,7 +1,7 @@
 import HeroSection from "@/components/layout/HeroSection";
 import FeatureCard from "@/components/ui/FeatureCard";
 import FishCard from "@/components/cards/FishCard";
-import { BookOpen, Brain, Users, Trophy, User } from "lucide-react";
+import { BookOpen, Brain, Users, Trophy, User, Map, Camera } from "lucide-react";
 import { api } from "@/lib/services/api";
 
 export default async function Home() {
@@ -11,6 +11,18 @@ export default async function Home() {
   const dailyFact = facts[0]; // For demo, show first fact
 
   const features = [
+    {
+      title: "Fish Map",
+      description: "Tap a place and see which fish live there.",
+      icon: Map,
+      href: "/fish-map",
+    },
+    {
+      title: "Fish for Real",
+      description: "Use your camera or upload a fish photo.",
+      icon: Camera,
+      href: "/fish-for-real",
+    },
     {
       title: "Learn About Fish",
       description: "Discover amazing fish species and their habitats.",
