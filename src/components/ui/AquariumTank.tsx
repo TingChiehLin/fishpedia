@@ -118,15 +118,26 @@ export default function AquariumTank() {
     const ctx = gsap.context(() => {
       nodes.forEach((el, index) => {
         if (!el) return;
-
-        const direction = index % 2 === 0 ? 1 : -1;
+        const fishItem = fishList[index];
+        const hasFacing = fishItem?.facing === "left" || fishItem?.facing === "right";
+        const direction = hasFacing
+          ? fishItem.facing === "left"
+            ? -1
+            : 1
+          : index % 2 === 0
+            ? 1
+            : -1;
         const y = gsap.utils.random(0, maxY);
         const duration = gsap.utils.random(10, 22);
 
         const startX = direction === 1 ? -80 : maxX + 80;
         const endX = direction === 1 ? maxX + 80 : -80;
 
-        gsap.set(el, { x: startX, y, scaleX: direction });
+        gsap.set(el, {
+          x: startX,
+          y,
+          scaleX: hasFacing ? 1 : direction,
+        });
 
         gsap.to(el, {
           x: endX,
