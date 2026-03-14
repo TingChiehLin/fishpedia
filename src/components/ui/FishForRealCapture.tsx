@@ -254,6 +254,9 @@ export default function FishForRealCapture() {
                   />
                 </div>
               )}
+              <div className="mt-4">
+                <Button>+ Add to Aquarium</Button>
+              </div>
             </div>
           )}
         </CardContent>
