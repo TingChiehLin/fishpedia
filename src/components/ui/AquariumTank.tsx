@@ -1,38 +1,56 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
+import { gsap } from "gsap";
 import { AquariumFish, getAquariumFish } from "@/lib/aquariumStorage";
-
-function hashString(value: string) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function getPosition(fish: AquariumFish) {
-  const hash = hashString(fish.id);
-  const x = 5 + (hash % 80);
-  const y = 10 + ((hash >> 3) % 60);
-  const delay = (hash % 10) * -1;
-  return { x, y, delay };
-}
 
 export default function AquariumTank() {
   const [fish, setFish] = useState<AquariumFish[]>([]);
+  const tankRef = useRef<HTMLDivElement | null>(null);
+  const fishRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     setFish(getAquariumFish());
   }, []);
 
-  const fishPositions = useMemo(() => {
-    return fish.map((item) => ({
-      item,
-      ...getPosition(item),
-    }));
-  }, [fish]);
+  const fishList = useMemo(() => fish, [fish]);
+
+  useLayoutEffect(() => {
+    const tank = tankRef.current;
+    if (!tank) return;
+
+    const bounds = tank.getBoundingClientRect();
+    const maxX = Math.max(0, bounds.width - 80);
+    const maxY = Math.max(0, bounds.height - 80);
+
+    const nodes = fishRefs.current.filter(Boolean);
+    if (nodes.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      nodes.forEach((el, index) => {
+        if (!el) return;
+
+        const direction = index % 2 === 0 ? 1 : -1;
+        const y = gsap.utils.random(0, maxY);
+        const duration = gsap.utils.random(10, 22);
+
+        const startX = direction === 1 ? -80 : maxX + 80;
+        const endX = direction === 1 ? maxX + 80 : -80;
+
+        gsap.set(el, { x: startX, y, scaleX: direction });
+
+        gsap.to(el, {
+          x: endX,
+          duration,
+          ease: "none",
+          repeat: -1,
+          delay: gsap.utils.random(0, 2),
+        });
+      });
+    }, tank);
+
+    return () => ctx.revert();
+  }, [fishList]);
 
   return (
     <section className="rounded-3xl border bg-gradient-to-b from-sky-100 via-cyan-200 to-blue-400 p-6 shadow-sm relative overflow-hidden">
@@ -50,21 +68,19 @@ export default function AquariumTank() {
         ))}
       </div>
 
-      <div className="relative h-64">
-        {fishPositions.length === 0 ? (
+      <div ref={tankRef} className="relative h-64">
+        {fishList.length === 0 ? (
           <div className="flex h-full items-center justify-center text-white/80 text-sm">
             Add fish to see them swim here.
           </div>
         ) : (
-          fishPositions.map(({ item, x, y, delay }) => (
+          fishList.map((item, index) => (
             <div
               key={item.id}
-              className="aquarium-fish"
-              style={{
-                left: `${x}%`,
-                top: `${y}%`,
-                animationDelay: `${delay}s`,
+              ref={(el) => {
+                if (el) fishRefs.current[index] = el;
               }}
+              className="aquarium-fish"
             >
               <img
                 src={item.cutoutUrl}

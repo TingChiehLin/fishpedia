@@ -190,7 +190,7 @@
 
 .aquarium-fish {
   position: absolute;
-  animation: aquarium-swim 14s linear infinite, aquarium-bob 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 .aquarium-bubble {
