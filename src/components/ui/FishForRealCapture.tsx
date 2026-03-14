@@ -18,6 +18,7 @@ export default function FishForRealCapture() {
     score: number;
     top5?: { label: string; score: number }[];
   } | null>(null);
+  const [cutoutUrl, setCutoutUrl] = useState<string | null>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -62,6 +63,7 @@ export default function FishForRealCapture() {
     setPreviewUrl(dataUrl);
     setIdentifyResult(null);
     setIdentifyError(null);
+    setCutoutUrl(null);
   };
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +74,7 @@ export default function FishForRealCapture() {
       setPreviewUrl(reader.result as string);
       setIdentifyResult(null);
       setIdentifyError(null);
+      setCutoutUrl(null);
     };
     reader.readAsDataURL(file);
   };
@@ -81,6 +84,7 @@ export default function FishForRealCapture() {
     setIdentifyLoading(true);
     setIdentifyError(null);
     setIdentifyResult(null);
+    setCutoutUrl(null);
     try {
       const res = await fetch("/api/fish-id", {
         method: "POST",
@@ -96,6 +100,16 @@ export default function FishForRealCapture() {
         score: data.score,
         top5: data.top5,
       });
+
+      const cutoutRes = await fetch("/api/remove-bg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageDataUrl: previewUrl }),
+      });
+      const cutoutData = await cutoutRes.json();
+      if (cutoutRes.ok && cutoutData?.imageDataUrl) {
+        setCutoutUrl(cutoutData.imageDataUrl);
+      }
     } catch (error) {
       setIdentifyError(
         error instanceof Error ? error.message : "Unable to identify fish"
@@ -214,6 +228,7 @@ export default function FishForRealCapture() {
                 setPreviewUrl(null);
                 setIdentifyResult(null);
                 setIdentifyError(null);
+                setCutoutUrl(null);
               }}
               disabled={!previewUrl}
             >
@@ -230,6 +245,15 @@ export default function FishForRealCapture() {
               <p className="text-lg font-semibold text-blue-800">
                 {identifyResult.label}
               </p>
+              {cutoutUrl && (
+                <div className="mt-3 rounded-lg bg-slate-50 p-3">
+                  <img
+                    src={cutoutUrl}
+                    alt="Fish cutout"
+                    className="w-full h-auto"
+                  />
+                </div>
+              )}
             </div>
           )}
         </CardContent>
