@@ -5,11 +5,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Home, BookOpen, Brain, Users, Trophy, User } from "lucide-react";
+import { Home, BookOpen, Brain, Users, Trophy, User, Map, Camera, Fish } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/fish-map", label: "Fish Map", icon: Map },
+  { href: "/fish-for-real", label: "Fish for Real", icon: Camera },
+  { href: "/aquarium", label: "Aquarium", icon: Fish },
   { href: "/learn", label: "Learn", icon: BookOpen },
   { href: "/quiz", label: "Quiz", icon: Brain },
   { href: "/activities", label: "Activities", icon: Users },
