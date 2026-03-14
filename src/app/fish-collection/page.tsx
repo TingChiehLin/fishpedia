@@ -365,22 +365,6 @@ function FishCollectionCard({ fish }: { fish: Fish }) {
               ? fish.fact
               : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
           </p>
-
-          <div
-            className={cn(
-              "flex items-center justify-between rounded-2xl px-4 py-3 text-sm",
-              isCollected
-                ? "bg-sky-50 text-sky-700"
-                : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
-            )}
-          >
-            <span>
-              {isCollected ? "Collection note updated" : "Discovery needed"}
-            </span>
-            <span className="font-semibold">
-              {isCollected ? "Entry complete" : "???"}
-            </span>
-          </div>
         </div>
       </div>
     </article>
