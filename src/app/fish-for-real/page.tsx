@@ -2,7 +2,7 @@ import FishForRealCapture from "@/components/ui/FishForRealCapture";
 
 export default function FishForRealPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 py-10 px-6">
       <header className="text-center space-y-3">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
           Fish for Real
