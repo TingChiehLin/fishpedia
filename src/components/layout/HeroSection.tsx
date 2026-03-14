@@ -3,7 +3,10 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-screen w-full items-center overflow-hidden bg-gradient-to-br from-sky-500 via-cyan-400 to-emerald-400">
+    <section
+      className="relative flex min-h-[calc(100vh-80px)] md:min-h-[calc(100vh-96px)] w-full items-center overflow-hidden bg-gradient-to-br
+                       from-sky-500 via-cyan-400 to-emerald-400"
+    >
       {/* Readability overlay */}
       <div className="absolute inset-0 bg-slate-900/25" />
 
@@ -32,14 +35,13 @@ export default function HeroSection() {
           learners of all ages.
         </p>
 
-        {/* CTA */}
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             asChild
             size="lg"
             className="h-12 rounded-full bg-white px-8 text-sky-700 shadow-lg transition-all duration-300 hover:scale-[1.03]"
           >
-            <Link href="/learn">Start Learning</Link>
+            <Link href="/fish-for-real">Start Fishing</Link>
           </Button>
 
           <Button
@@ -48,7 +50,7 @@ export default function HeroSection() {
             variant="secondary"
             className="h-12 rounded-full border border-white/30 bg-white/10 px-8 text-white backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:bg-white/20"
           >
-            <Link href="/quiz">Take a Quiz</Link>
+            <Link href="/fish-collection">Fish Collection</Link>
           </Button>
         </div>
       </div>
