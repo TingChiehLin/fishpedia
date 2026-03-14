@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { fishCollectionData } from "@/lib/fishCollectionData";
+import { getAquariumFish } from "@/lib/aquariumStorage";
 
 type Fish = {
   id: number;
@@ -13,6 +15,7 @@ type Fish = {
   habitat: string;
   fact: string;
   image: string;
+  collectedImage?: string;
 };
 
 type FilterOption = "All" | "Collected" | "Not Collected";
@@ -58,116 +61,6 @@ function createFishImage(
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-const fishCollection: Fish[] = [
-  {
-    id: 1,
-    name: "Sunbeam Guppy",
-    collected: true,
-    rarity: "Common",
-    habitat: "Shallow river pools",
-    fact: "Sunbeam guppies gather in bright groups when the water is warm.",
-    image: createFishImage("#FDE68A", "#38BDF8", "#F97316"),
-  },
-  {
-    id: 2,
-    name: "Pebble Puffer",
-    collected: true,
-    rarity: "Rare",
-    habitat: "Rocky tide pools",
-    fact: "It puffs into a ball when a shadow passes overhead.",
-    image: createFishImage("#F9A8D4", "#A7F3D0", "#14B8A6"),
-  },
-  {
-    id: 3,
-    name: "Coral Comet",
-    collected: false,
-    rarity: "Epic",
-    habitat: "Coral reef arches",
-    fact: "Its tail flashes like confetti during sunset swims.",
-    image: createFishImage("#FB7185", "#38BDF8", "#FACC15"),
-  },
-  {
-    id: 4,
-    name: "Moonfin Ray",
-    collected: false,
-    rarity: "Legendary",
-    habitat: "Moonlit lagoons",
-    fact: "Moonfin rays glide so softly they barely ripple the water.",
-    image: createFishImage("#C4B5FD", "#60A5FA", "#22D3EE"),
-  },
-  {
-    id: 5,
-    name: "Bamboo Betta",
-    collected: true,
-    rarity: "Rare",
-    habitat: "Lily-covered ponds",
-    fact: "Bamboo bettas build bubble nests under floating leaves.",
-    image: createFishImage("#86EFAC", "#2DD4BF", "#0EA5E9"),
-  },
-  {
-    id: 6,
-    name: "Tidewhistle Tang",
-    collected: false,
-    rarity: "Common",
-    habitat: "Kelp gardens",
-    fact: "The fins hum gently when ocean currents get playful.",
-    image: createFishImage("#67E8F9", "#34D399", "#FBBF24"),
-  },
-  {
-    id: 7,
-    name: "Golden Ripple Koi",
-    collected: true,
-    rarity: "Epic",
-    habitat: "Garden ponds",
-    fact: "Its scales look like liquid gold when sunlight touches them.",
-    image: createFishImage("#FDE68A", "#FB923C", "#F43F5E"),
-  },
-  {
-    id: 8,
-    name: "Cloudstripe Minnow",
-    collected: false,
-    rarity: "Common",
-    habitat: "Mountain creeks",
-    fact: "Cloudstripe minnows dart into calm eddies during storms.",
-    image: createFishImage("#BFDBFE", "#93C5FD", "#34D399"),
-  },
-  {
-    id: 9,
-    name: "Lantern Loach",
-    collected: true,
-    rarity: "Rare",
-    habitat: "Twilight riverbanks",
-    fact: "Tiny glowing markings help groups stay together at dusk.",
-    image: createFishImage("#FDBA74", "#FDE68A", "#22C55E"),
-  },
-  {
-    id: 10,
-    name: "Starcrest Seahorse",
-    collected: false,
-    rarity: "Legendary",
-    habitat: "Seagrass mazes",
-    fact: "Its crown-like fin shimmers like a tiny night sky.",
-    image: createFishImage("#A5B4FC", "#67E8F9", "#FDE68A"),
-  },
-  {
-    id: 11,
-    name: "Mango Mosaic Cichlid",
-    collected: true,
-    rarity: "Epic",
-    habitat: "Warm mangrove lagoons",
-    fact: "Each one has a slightly different patchwork pattern.",
-    image: createFishImage("#FDBA74", "#FB7185", "#2DD4BF"),
-  },
-  {
-    id: 12,
-    name: "Bubbletail Blenny",
-    collected: false,
-    rarity: "Rare",
-    habitat: "Sunny reef nooks",
-    fact: "It likes to hide in tiny caves and peek out with a wiggle.",
-    image: createFishImage("#7DD3FC", "#A7F3D0", "#F59E0B"),
-  },
-];
 
 const rarityStyles: Record<Fish["rarity"], string> = {
   Common: "bg-emerald-100 text-emerald-700 ring-emerald-200",
@@ -257,129 +150,170 @@ function SearchIcon() {
   );
 }
 
-function FishCollectionCard({ fish }: { fish: Fish }) {
+function FishCollectionCard({
+  fish,
+  isFlipped,
+  onToggle,
+}: {
+  fish: Fish;
+  isFlipped: boolean;
+  onToggle: (id: number) => void;
+}) {
   const isCollected = fish.collected;
 
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-[28px] border shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl",
+        "group relative overflow-hidden rounded-[28px] border shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flip-card",
+        isFlipped ? "is-flipped" : "",
         isCollected
           ? "border-white/70 bg-white/85"
           : "border-slate-200/80 bg-slate-50/85",
       )}
+      onClick={() => {
+        if (isCollected) onToggle(fish.id);
+      }}
+      role={isCollected ? "button" : undefined}
+      tabIndex={isCollected ? 0 : -1}
+      onKeyDown={(event) => {
+        if (!isCollected) return;
+        if (event.key === "Enter" || event.key === " ") {
+          onToggle(fish.id);
+        }
+      }}
     >
-      <div
-        className={cn(
-          "absolute inset-x-0 top-0 h-1/2 opacity-80 transition-opacity duration-300 group-hover:opacity-100",
-          isCollected
-            ? "bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-100"
-            : "bg-gradient-to-br from-slate-200 via-slate-100 to-cyan-50",
-        )}
-      />
-
-      <div className="relative p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <span
-            className={cn(
-              "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1",
-              isCollected
-                ? rarityStyles[fish.rarity]
-                : "bg-white/80 text-slate-500 ring-slate-200",
-            )}
-          >
-            {isCollected ? fish.rarity : "Mystery Fish"}
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ring-1",
-              isCollected
-                ? "bg-emerald-100 text-emerald-700 ring-emerald-200"
-                : "bg-slate-200 text-slate-600 ring-slate-300",
-            )}
-          >
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isCollected ? "bg-emerald-500" : "bg-slate-400",
-              )}
-            />
-            {isCollected ? "Collected" : "Locked"}
-          </span>
-        </div>
-
-        <div
-          className={cn(
-            "relative mt-4 overflow-hidden rounded-[24px] border p-4",
-            isCollected
-              ? `border-white/80 bg-gradient-to-br ${rarityGlow[fish.rarity]}`
-              : "border-slate-200 bg-gradient-to-br from-slate-300 via-slate-100 to-cyan-50",
-          )}
-        >
-          {isCollected ? (
-            <Image
-              src={fish.image}
-              alt={fish.name}
-              width={320}
-              height={220}
-              unoptimized
-              className="h-44 w-full rounded-[20px] object-cover shadow-md transition-transform duration-300 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="relative h-44 overflow-hidden rounded-[20px]">
-              <Image
-                src={fish.image}
-                alt=""
-                fill
-                unoptimized
-                className="absolute inset-0 h-full w-full object-cover opacity-20 blur-[2px] grayscale"
-              />
-              <div className="absolute inset-0 bg-white/30 backdrop-blur-[1px]" />
-              <LockedFishArt />
-            </div>
-          )}
-        </div>
-
-        <div className="mt-5 space-y-3">
-          <div className="space-y-1">
-            <h2
-              className={cn(
-                "text-xl font-bold tracking-tight",
-                isCollected ? "text-slate-900" : "text-slate-600",
-              )}
-            >
-              {isCollected ? fish.name : "Unknown Fish"}
-            </h2>
-            <p className="text-sm font-medium text-slate-500">
-              Habitat: {isCollected ? fish.habitat : "Hidden until discovered"}
-            </p>
-          </div>
-
-          <p
-            className={cn(
-              "min-h-12 text-sm leading-6",
-              isCollected ? "text-slate-600" : "text-slate-500",
-            )}
-          >
-            {isCollected
-              ? fish.fact
-              : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
-          </p>
-
+      <div className="flip-card-inner">
+        <div className="flip-card-face flip-card-front">
           <div
             className={cn(
-              "flex items-center justify-between rounded-2xl px-4 py-3 text-sm",
+              "absolute inset-x-0 top-0 h-1/2 opacity-80 transition-opacity duration-300 group-hover:opacity-100",
               isCollected
-                ? "bg-sky-50 text-sky-700"
-                : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
+                ? "bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-100"
+                : "bg-gradient-to-br from-slate-200 via-slate-100 to-cyan-50",
             )}
-          >
-            <span>
-              {isCollected ? "Collection note updated" : "Discovery needed"}
-            </span>
-            <span className="font-semibold">
-              {isCollected ? "Entry complete" : "???"}
-            </span>
+          />
+
+          <div className="relative p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1",
+                  isCollected
+                    ? rarityStyles[fish.rarity]
+                    : "bg-white/80 text-slate-500 ring-slate-200",
+                )}
+              >
+                {isCollected ? fish.rarity : "Mystery Fish"}
+              </span>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ring-1",
+                  isCollected
+                    ? "bg-emerald-100 text-emerald-700 ring-emerald-200"
+                    : "bg-slate-200 text-slate-600 ring-slate-300",
+                )}
+              >
+                <span
+                  className={cn(
+                    "h-2 w-2 rounded-full",
+                    isCollected ? "bg-emerald-500" : "bg-slate-400",
+                  )}
+                />
+                {isCollected ? "Collected" : "Locked"}
+              </span>
+            </div>
+
+            <div
+              className={cn(
+                "relative mt-4 overflow-hidden rounded-[24px] border p-4",
+                isCollected
+                  ? `border-white/80 bg-gradient-to-br ${rarityGlow[fish.rarity]}`
+                  : "border-slate-200 bg-gradient-to-br from-slate-300 via-slate-100 to-cyan-50",
+              )}
+            >
+              {isCollected ? (
+                <Image
+                  src={fish.image}
+                  alt={fish.name}
+                  width={320}
+                  height={220}
+                  unoptimized
+                  className="h-44 w-full rounded-[20px] object-cover shadow-md transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              ) : (
+                <div className="relative h-44 overflow-hidden rounded-[20px]">
+                  <Image
+                    src={fish.image}
+                    alt=""
+                    fill
+                    unoptimized
+                    className="absolute inset-0 h-full w-full object-cover opacity-20 blur-[2px] grayscale"
+                  />
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-[1px]" />
+                  <LockedFishArt />
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 space-y-3">
+              <div className="space-y-1">
+                <h2
+                  className={cn(
+                    "text-xl font-bold tracking-tight",
+                    isCollected ? "text-slate-900" : "text-slate-600",
+                  )}
+                >
+                  {isCollected ? fish.name : "Unknown Fish"}
+                </h2>
+                <p className="text-sm font-medium text-slate-500">
+                  Habitat: {isCollected ? fish.habitat : "Hidden until discovered"}
+                </p>
+              </div>
+
+              <p
+                className={cn(
+                  "min-h-12 text-sm leading-6",
+                  isCollected ? "text-slate-600" : "text-slate-500",
+                )}
+              >
+                {isCollected
+                  ? fish.fact
+                  : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
+              </p>
+
+              <div
+                className={cn(
+                  "flex items-center justify-between rounded-2xl px-4 py-3 text-sm",
+                  isCollected
+                    ? "bg-sky-50 text-sky-700"
+                    : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
+                )}
+              >
+                <span>
+                  {isCollected ? "Collection note updated" : "Discovery needed"}
+                </span>
+                <span className="font-semibold">
+                  {isCollected ? "Entry complete" : "???"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flip-card-face flip-card-back">
+          <div className="relative h-full p-5">
+            <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-sky-100 via-cyan-50 to-emerald-100" />
+            <div className="relative flex h-full flex-col items-center justify-center gap-4">
+              <Image
+                src={fish.collectedImage ?? fish.image}
+                alt={fish.name}
+                width={320}
+                height={220}
+                unoptimized
+                className="h-52 w-full rounded-[22px] object-cover shadow-lg"
+              />
+              <p className="text-lg font-semibold text-slate-800">{fish.name}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -390,13 +324,29 @@ function FishCollectionCard({ fish }: { fish: Fish }) {
 export default function FishCollectionPage() {
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
 
-  const collectedCount = fishCollection.filter((fish) => fish.collected).length;
-  const totalCount = 120;
+  const collectionWithStatus = useMemo(() => {
+    const aquariumFish = getAquariumFish();
+    const collectedMap = new Map(
+      aquariumFish.map((fish) => [fish.name.trim().toLowerCase(), fish])
+    );
+    return fishCollectionData.map((fish) => ({
+      ...fish,
+      collected: collectedMap.has(fish.name.trim().toLowerCase()),
+      collectedImage: collectedMap.get(fish.name.trim().toLowerCase())
+        ?.cutoutUrl,
+    })) as Fish[];
+  }, []);
+
+  const collectedCount = collectionWithStatus.filter(
+    (fish) => fish.collected
+  ).length;
+  const totalCount = collectionWithStatus.length;
   const progressPercent = Math.round((collectedCount / totalCount) * 100);
   const remainingCount = totalCount - collectedCount;
 
-  const filteredFish = fishCollection.filter((fish) => {
+  const filteredFish = collectionWithStatus.filter((fish) => {
     const searchTarget = fish.collected ? fish.name : "unknown";
     const matchesSearch = searchTarget
       .toLowerCase()
@@ -504,7 +454,17 @@ export default function FishCollectionPage() {
         {filteredFish.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {filteredFish.map((fish) => (
-              <FishCollectionCard key={fish.id} fish={fish} />
+              <FishCollectionCard
+                key={fish.id}
+                fish={fish}
+                isFlipped={Boolean(flippedCards[fish.id])}
+                onToggle={(id) =>
+                  setFlippedCards((prev) => ({
+                    ...prev,
+                    [id]: !prev[id],
+                  }))
+                }
+              />
             ))}
           </div>
         ) : (
