@@ -392,7 +392,7 @@ export default function FishCollectionPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const collectedCount = fishCollection.filter((fish) => fish.collected).length;
-  const totalCount = fishCollection.length;
+  const totalCount = 120;
   const progressPercent = Math.round((collectedCount / totalCount) * 100);
   const remainingCount = totalCount - collectedCount;
 
