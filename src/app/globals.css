@@ -146,6 +146,36 @@
   animation: fish-spin-360 8s linear infinite;
 }
 
+.flip-card {
+  perspective: 1200px;
+}
+
+.flip-card-inner {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  backface-visibility: hidden;
+}
+
+.flip-card-front {
+  position: relative;
+  height: 100%;
+}
+
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
 @keyframes aquarium-swim {
   0% {
     transform: translateX(-20px) scaleX(1);
