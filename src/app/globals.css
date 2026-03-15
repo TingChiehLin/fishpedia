@@ -218,6 +218,26 @@
   }
 }
 
+@keyframes aquarium-seaweed-sway-left {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateX(0);
+  }
+  50% {
+    transform: rotate(2deg) translateX(4px);
+  }
+}
+
+@keyframes aquarium-seaweed-sway-right {
+  0%,
+  100% {
+    transform: rotate(1.5deg) translateX(0);
+  }
+  50% {
+    transform: rotate(-2.25deg) translateX(-4px);
+  }
+}
+
 .aquarium-fish {
   position: absolute;
   will-change: transform;
@@ -236,4 +256,19 @@
 .aquarium-waves {
   background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px);
   background-size: 18px 18px;
+}
+
+.aquarium-seaweed-sway-left,
+.aquarium-seaweed-sway-right {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.aquarium-seaweed-sway-left {
+  animation: aquarium-seaweed-sway-left 6s ease-in-out infinite;
+}
+
+.aquarium-seaweed-sway-right {
+  animation: aquarium-seaweed-sway-right 6.8s ease-in-out infinite;
 }

@@ -2,12 +2,19 @@ import { NextResponse } from "next/server";
 import { execFile } from "node:child_process";
 import { mkdtemp, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { existsSync } from "node:fs";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const PYTHON_PATH = "/Users/sharon/Desktop/unihack_fishpedia/.venv-fish3d/bin/python";
-const SCRIPT_PATH = "/Users/sharon/Desktop/unihack_fishpedia/tools/fish_id/infer.py";
+const PROJECT_PATH = process.env.PROJECT_PATH ?? process.cwd();
+const FALLBACK_PYTHON = resolve(PROJECT_PATH, ".venv-fish3d", "bin", "python");
+const PYTHON_PATH = process.env.FISH_PYTHON_PATH
+  ? process.env.FISH_PYTHON_PATH
+  : existsSync(FALLBACK_PYTHON)
+    ? FALLBACK_PYTHON
+    : "python3";
+const SCRIPT_PATH = resolve(PROJECT_PATH, "tools", "fish_id", "infer.py");
 
 function parseDataUrl(dataUrl: string) {
   const match = dataUrl.match(/^data:(image\/\w+);base64,(.+)$/);

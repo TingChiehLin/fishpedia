@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { execFile } from "node:child_process";
-import { mkdtemp, writeFile, rm } from "node:fs/promises";
+import { mkdtemp, writeFile, rm, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { existsSync } from "node:fs";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const PYTHON_PATH = "/Users/sharon/Desktop/unihack_fishpedia/.venv-fish3d/bin/python";
-const SCRIPT_PATH = "/Users/sharon/Desktop/unihack_fishpedia/tools/fish_id/remove_bg.py";
+const PROJECT_PATH = process.env.PROJECT_PATH ?? process.cwd();
+const FALLBACK_PYTHON = resolve(PROJECT_PATH, ".venv-fish3d", "bin", "python");
+const PYTHON_PATH = process.env.FISH_PYTHON_PATH
+  ? process.env.FISH_PYTHON_PATH
+  : existsSync(FALLBACK_PYTHON)
+    ? FALLBACK_PYTHON
+    : "python3";
+const SCRIPT_PATH = resolve(PROJECT_PATH, "tools", "fish_id", "remove_bg.py");
 
 function parseDataUrl(dataUrl: string) {
   const match = dataUrl.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -37,11 +44,39 @@ export async function POST(request: Request) {
     const workDir = await mkdtemp(join(tmpdir(), "fish-rmbg-"));
     const imagePath = join(workDir, "input.png");
     await writeFile(imagePath, parsed.data);
+    const tempRoot = join(tmpdir(), "fish-rembg-tmp");
+    const u2netCache = join(PROJECT_PATH, ".cache", "u2net");
+    await mkdir(tempRoot, { recursive: true });
+    await mkdir(u2netCache, { recursive: true });
 
-    const { stdout } = await execFileAsync(PYTHON_PATH, [SCRIPT_PATH, imagePath], {
-      timeout: 120000,
-      maxBuffer: 1024 * 1024,
-    });
+    let stdout = "";
+    try {
+      const result = await execFileAsync(PYTHON_PATH, [SCRIPT_PATH, imagePath], {
+        timeout: 120000,
+        maxBuffer: 1024 * 1024,
+        env: {
+          ...process.env,
+          TMPDIR: tempRoot,
+          TEMP: tempRoot,
+          TMP: tempRoot,
+          U2NET_HOME: u2netCache,
+          ORT_CACHE_DIR: tempRoot,
+        },
+      });
+      stdout = result.stdout;
+    } catch (error: any) {
+      await rm(workDir, { recursive: true, force: true });
+      return NextResponse.json(
+        {
+          error: "remove-bg failed",
+          details:
+            error?.stderr ||
+            error?.message ||
+            "Unknown error running remove-bg",
+        },
+        { status: 500 }
+      );
+    }
 
     await rm(workDir, { recursive: true, force: true });
 

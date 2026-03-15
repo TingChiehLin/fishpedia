@@ -314,6 +314,34 @@ function FishCollectionCard({
               />
               <p className="text-lg font-semibold text-slate-800">{fish.name}</p>
             </div>
+          )}
+        </div>
+
+        <div className="mt-5 space-y-3">
+          <div className="space-y-1">
+            <h2
+              className={cn(
+                "text-xl font-bold tracking-tight",
+                isCollected ? "text-slate-900" : "text-slate-600",
+              )}
+            >
+              {isCollected ? fish.name : "Unknown Fish"}
+            </h2>
+            <p className="text-sm font-medium text-slate-500">
+              Habitat: {isCollected ? fish.habitat : "Hidden until discovered"}
+            </p>
+          </div>
+
+          <p
+            className={cn(
+              "min-h-12 text-sm leading-6",
+              isCollected ? "text-slate-600" : "text-slate-500",
+            )}
+          >
+            {isCollected
+              ? fish.fact
+              : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
+          </p>
           </div>
         </div>
       </div>
