@@ -26,9 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-b from-blue-50 to-green-50 min-h-screen`}
+        suppressHydrationWarning
       >
         <Navbar />
         <LayoutMain>{children}</LayoutMain>
