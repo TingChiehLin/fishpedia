@@ -12,7 +12,7 @@ For many families, it’s always a struggle to prevent children from getting bor
 
 **Fishpedia bridges the gap between interest and engagement by letting kids scan and collect fish, build their own collection, and learn fun facts to share with their families.**
 
-Instead of waiting around, kids become active explorers—discovering fish species, collecting them digitally, and sharing what they learn with the people around them.
+Instead of waiting around, kids become active explorers discovering fish species, collecting them digitally, and sharing what they learn with the people around them.
 
 ---
 
@@ -178,4 +178,4 @@ Possible future features:
 
 ---
 
-Fishpedia transforms fishing into a fun learning adventure—helping families explore nature together while keeping kids curious and engaged.
+Fishpedia transforms fishing into a fun learning adventure helping families explore nature together while keeping kids curious and engaged.
