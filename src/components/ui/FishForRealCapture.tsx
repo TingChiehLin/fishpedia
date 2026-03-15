@@ -299,13 +299,6 @@ export default function FishForRealCapture() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700/70">
                 Fish Cam
               </p>
-              <CardTitle className="mt-2 text-2xl font-black tracking-tight text-slate-900">
-                Ready for your next splashy catch
-              </CardTitle>
-              <p className="mt-2 max-w-lg text-sm leading-6 text-slate-600">
-                Frame your fish inside the bubbly capture window, then confirm
-                when the photo looks just right.
-              </p>
             </div>
             <span className="rounded-full bg-cyan-100 px-4 py-1 text-xs font-semibold text-cyan-700 ring-1 ring-cyan-200">
               {previewUrl ? "Preview Ready" : isCameraOn ? "Live" : "Standby"}
@@ -404,7 +397,7 @@ export default function FishForRealCapture() {
                       </svg>
                     </div>
                     <h3 className="mt-5 text-2xl font-black tracking-tight text-slate-900">
-                      Ready to capture your fish
+                      Ready for your next splashy catch
                     </h3>
                     <p className="mt-2 max-w-xs text-sm leading-6 text-slate-600">
                       Point your camera at the fish you caught
@@ -451,11 +444,6 @@ export default function FishForRealCapture() {
                     : "Open Cam"}
             </Button>
           </div>
-
-          <div className="rounded-[24px] bg-cyan-50/80 px-4 py-3 text-center text-sm leading-6 text-slate-600 ring-1 ring-cyan-100">
-            Retake clears the current shot and reopens the camera. Confirm snaps
-            a photo or identifies your captured fish.
-          </div>
         </CardContent>
       </Card>
 
@@ -469,10 +457,6 @@ export default function FishForRealCapture() {
               <CardTitle className="mt-2 text-2xl font-black tracking-tight text-slate-900">
                 Save the best fish photo
               </CardTitle>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Upload from your gallery or review the latest snap before you
-                identify and add it to your collection.
-              </p>
             </div>
             <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-200">
               {previewUrl ? "Image Ready" : "Waiting"}
@@ -586,9 +570,6 @@ export default function FishForRealCapture() {
                     <h3 className="mt-4 text-xl font-black tracking-tight text-slate-900">
                       Your fish preview will appear here
                     </h3>
-                    <p className="mt-2 max-w-xs text-sm leading-6 text-slate-600">
-                      Upload a photo or snap one above to get started.
-                    </p>
                   </div>
                 )}
               </div>
