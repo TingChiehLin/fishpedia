@@ -61,7 +61,6 @@ function createFishImage(
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-
 const rarityStyles: Record<Fish["rarity"], string> = {
   Common: "bg-emerald-100 text-emerald-700 ring-emerald-200",
   Rare: "bg-sky-100 text-sky-700 ring-sky-200",
@@ -266,7 +265,8 @@ function FishCollectionCard({
                   {isCollected ? fish.name : "Unknown Fish"}
                 </h2>
                 <p className="text-sm font-medium text-slate-500">
-                  Habitat: {isCollected ? fish.habitat : "Hidden until discovered"}
+                  Habitat:{" "}
+                  {isCollected ? fish.habitat : "Hidden until discovered"}
                 </p>
               </div>
 
@@ -312,36 +312,38 @@ function FishCollectionCard({
                 unoptimized
                 className="h-52 w-full rounded-[22px] object-cover shadow-lg"
               />
-              <p className="text-lg font-semibold text-slate-800">{fish.name}</p>
+              <p className="text-lg font-semibold text-slate-800">
+                {fish.name}
+              </p>
             </div>
-          )}
-        </div>
-
-        <div className="mt-5 space-y-3">
-          <div className="space-y-1">
-            <h2
-              className={cn(
-                "text-xl font-bold tracking-tight",
-                isCollected ? "text-slate-900" : "text-slate-600",
-              )}
-            >
-              {isCollected ? fish.name : "Unknown Fish"}
-            </h2>
-            <p className="text-sm font-medium text-slate-500">
-              Habitat: {isCollected ? fish.habitat : "Hidden until discovered"}
-            </p>
           </div>
 
-          <p
-            className={cn(
-              "min-h-12 text-sm leading-6",
-              isCollected ? "text-slate-600" : "text-slate-500",
-            )}
-          >
-            {isCollected
-              ? fish.fact
-              : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
-          </p>
+          <div className="mt-5 space-y-3">
+            <div className="space-y-1">
+              <h2
+                className={cn(
+                  "text-xl font-bold tracking-tight",
+                  isCollected ? "text-slate-900" : "text-slate-600",
+                )}
+              >
+                {isCollected ? fish.name : "Unknown Fish"}
+              </h2>
+              <p className="text-sm font-medium text-slate-500">
+                Habitat:{" "}
+                {isCollected ? fish.habitat : "Hidden until discovered"}
+              </p>
+            </div>
+
+            <p
+              className={cn(
+                "min-h-12 text-sm leading-6",
+                isCollected ? "text-slate-600" : "text-slate-500",
+              )}
+            >
+              {isCollected
+                ? fish.fact
+                : "A secret entry is waiting here. Reel this fish in to unlock its full story."}
+            </p>
           </div>
         </div>
       </div>
@@ -357,7 +359,7 @@ export default function FishCollectionPage() {
   const collectionWithStatus = useMemo(() => {
     const aquariumFish = getAquariumFish();
     const collectedMap = new Map(
-      aquariumFish.map((fish) => [fish.name.trim().toLowerCase(), fish])
+      aquariumFish.map((fish) => [fish.name.trim().toLowerCase(), fish]),
     );
     return fishCollectionData.map((fish) => ({
       ...fish,
@@ -368,7 +370,7 @@ export default function FishCollectionPage() {
   }, []);
 
   const collectedCount = collectionWithStatus.filter(
-    (fish) => fish.collected
+    (fish) => fish.collected,
   ).length;
   const totalCount = collectionWithStatus.length;
   const progressPercent = Math.round((collectedCount / totalCount) * 100);

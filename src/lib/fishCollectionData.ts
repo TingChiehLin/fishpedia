@@ -211,7 +211,7 @@ const palettes = [
   ["#7DD3FC", "#A7F3D0", "#F59E0B"],
 ];
 
-export const fishCollectionData = fishNames.slice(0, 120).map((name, index) => {
+export const fishCollectionData = fishNames.slice(0, 60).map((name, index) => {
   const palette = palettes[index % palettes.length];
   return {
     id: index + 1,
