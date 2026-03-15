@@ -1,59 +1,180 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fishpedia 🎣
 
-## Getting Started
+Fishpedia is an interactive fishing companion app designed to make fishing more engaging and educational for children and families. By scanning and identifying fish, users can build their own digital fish collection while learning fun facts about each species.
 
-First, run the development server:
+The project is built with **Next.js** and integrates a **local machine learning model** to identify fish from images.
+
+---
+
+# 🌊 Product Idea
+
+For many families, it’s always a struggle to prevent children from getting bored while they’re fishing.
+
+**Fishpedia bridges the gap between interest and engagement by letting kids scan and collect fish, build their own collection, and learn fun facts to share with their families.**
+
+Instead of waiting around, kids become active explorers—discovering fish species, collecting them digitally, and sharing what they learn with the people around them.
+
+---
+
+# 🎥 Product Demo
+
+[![Fishpedia Demo](https://img.youtube.com/vi/q7PXBqnkq5w/0.jpg)](https://youtu.be/q7PXBqnkq5w?si=vQ2-haqEbSm5yMlO)
+
+Watch the demo video to see the concept and prototype in action.
+
+---
+
+# 🛠 Tech Stack
+
+- **Next.js** – React framework for the frontend
+- **Python** – Runs the local fish identification model
+- **PyTorch** – Machine learning framework
+- **Transformers (Hugging Face)** – Model integration
+- **Pillow** – Image processing
+- **Node.js / npm / yarn / pnpm / bun** – Development tooling
+
+---
+
+# 🚀 Getting Started
+
+This project was bootstrapped with **create-next-app**.
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+or
+
+```bash
+yarn install
+```
+
+---
+
+## Run the development server
 
 ```bash
 npm run dev
-# or
+```
+
+or
+
+```bash
 yarn dev
-# or
+```
+
+or
+
+```bash
 pnpm dev
-# or
+```
+
+or
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open the application in your browser:
 
-## Fish ID (Local ML Setup)
+```
+http://localhost:3000
+```
 
-The "Fish for Real" page can identify fish using a local Python model. Since the virtual environment is not committed to Git, each developer needs to set it up locally.
+---
 
-1. Create the virtual environment (from the repo root):
+# 🐟 Fish Identification (Local ML Setup)
+
+The **Fish for Real** page uses a local Python model to identify fish species from images.
+
+Since the Python virtual environment is **not included in the repository**, each developer must set it up locally.
+
+---
+
+## 1. Create the Python virtual environment
+
+From the project root directory:
+
 ```bash
 python3 -m venv .venv-fish3d
 ```
 
-2. Install dependencies:
+---
+
+## 2. Install dependencies
+
 ```bash
 .venv-fish3d/bin/pip install torch torchvision transformers pillow
 ```
 
-3. Start the app (port 3001 is used in this project):
+---
+
+## 3. Start the application
+
+This project runs on **port 3001**:
+
 ```bash
 npm run dev -- -H 127.0.0.1 -p 3001
 ```
 
-Notes:
-- The model weights are downloaded at first run to your local Hugging Face cache (e.g., `~/.cache/huggingface/`).
-- The API route expects the Python path at `.venv-fish3d/bin/python` relative to the repo root.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# ⚙️ Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- The machine learning model weights are downloaded automatically on the first run.
+- They are stored locally in the Hugging Face cache:
 
-## Learn More
+```
+~/.cache/huggingface/
+```
 
-To learn more about Next.js, take a look at the following resources:
+- The API route expects the Python executable at:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+.venv-fish3d/bin/python
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+relative to the project root.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 📂 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+public/             # Static assets
+
+src/                # Next.js application source code
+ ├── app/           # App router pages and layouts
+ ├── components/    # Reusable React components
+ └── api/           # API routes
+
+tools/
+ └── fish_id/       # Python scripts for fish identification model
+```
+
+---
+
+# 👨‍💻 Development Notes
+
+- The app automatically reloads during development.
+- Fonts are optimized using **next/font** with the **Geist** font family from Vercel.
+- The machine learning model runs locally through Python and is triggered via a Next.js API route.
+
+---
+
+# 🌟 Future Improvements
+
+Potential features for future development:
+
+- Cloud-based fish recognition
+- Gamified fish collection system
+- Achievements and badges for kids
+- Educational quizzes about marine life
+- Mobile-friendly version
+- Leaderboards for family fishing trips
+
+---
+
+Fishpedia transforms fishing into a fun learning adventure—helping families explore nature together while keeping kids curious and engaged.
