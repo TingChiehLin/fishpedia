@@ -18,28 +18,32 @@ Instead of waiting around, kids become active explorers—discovering fish speci
 
 # 🎥 Product Demo
 
-[![Fishpedia Demo](https://img.youtube.com/vi/q7PXBqnkq5w/0.jpg)](https://youtu.be/q7PXBqnkq5w?si=vQ2-haqEbSm5yMlO)
+<p align="center">
+  <a href="https://youtu.be/q7PXBqnkq5w?si=vQ2-haqEbSm5yMlO">
+    <img src="https://img.youtube.com/vi/q7PXBqnkq5w/maxresdefault.jpg" width="800">
+  </a>
+</p>
 
-Watch the demo video to see the concept and prototype in action.
+<p align="center">
+  ▶ Click the video above to watch the Fishpedia demo
+</p>
 
 ---
 
 # 🛠 Tech Stack
 
 - **Next.js** – React framework for the frontend
-- **Python** – Runs the local fish identification model
+- **Python** – Runs the fish identification model
 - **PyTorch** – Machine learning framework
-- **Transformers (Hugging Face)** – Model integration
+- **Hugging Face Transformers** – Model loading
 - **Pillow** – Image processing
-- **Node.js / npm / yarn / pnpm / bun** – Development tooling
+- **Node.js** – Development environment
 
 ---
 
 # 🚀 Getting Started
 
-This project was bootstrapped with **create-next-app**.
-
-## Install dependencies
+Install dependencies:
 
 ```bash
 npm install
@@ -53,31 +57,13 @@ yarn install
 
 ---
 
-## Run the development server
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-or
-
-```bash
-yarn dev
-```
-
-or
-
-```bash
-pnpm dev
-```
-
-or
-
-```bash
-bun dev
-```
-
-Then open the application in your browser:
+Then open:
 
 ```
 http://localhost:3000
@@ -87,15 +73,15 @@ http://localhost:3000
 
 # 🐟 Fish Identification (Local ML Setup)
 
-The **Fish for Real** page uses a local Python model to identify fish species from images.
+The **Fish for Real** page identifies fish using a local Python machine learning model.
 
-Since the Python virtual environment is **not included in the repository**, each developer must set it up locally.
+Since the Python virtual environment is not committed to the repository, each developer must set it up locally.
 
 ---
 
-## 1. Create the Python virtual environment
+## 1️⃣ Create Python virtual environment
 
-From the project root directory:
+From the repository root:
 
 ```bash
 python3 -m venv .venv-fish3d
@@ -103,7 +89,7 @@ python3 -m venv .venv-fish3d
 
 ---
 
-## 2. Install dependencies
+## 2️⃣ Install dependencies
 
 ```bash
 .venv-fish3d/bin/pip install torch torchvision transformers pillow
@@ -111,7 +97,7 @@ python3 -m venv .venv-fish3d
 
 ---
 
-## 3. Start the application
+## 3️⃣ Run the application
 
 This project runs on **port 3001**:
 
@@ -119,24 +105,42 @@ This project runs on **port 3001**:
 npm run dev -- -H 127.0.0.1 -p 3001
 ```
 
+Then open:
+
+```
+http://localhost:3001
+```
+
 ---
 
 # ⚙️ Notes
 
-- The machine learning model weights are downloaded automatically on the first run.
-- They are stored locally in the Hugging Face cache:
+Fishpedia uses a **pre-trained fish classification model from Hugging Face**:
+
+https://huggingface.co/beercan/fish-classification
+
+Key details:
+
+- The model is automatically downloaded the first time it runs.
+- Model files are cached locally in:
 
 ```
 ~/.cache/huggingface/
 ```
 
-- The API route expects the Python executable at:
+- The Python inference script is located in:
+
+```
+tools/fish_id
+```
+
+- The Next.js API route calls the Python environment at:
 
 ```
 .venv-fish3d/bin/python
 ```
 
-relative to the project root.
+Make sure the virtual environment exists before running the app.
 
 ---
 
@@ -146,12 +150,9 @@ relative to the project root.
 public/             # Static assets
 
 src/                # Next.js application source code
- ├── app/           # App router pages and layouts
- ├── components/    # Reusable React components
- └── api/           # API routes
 
 tools/
- └── fish_id/       # Python scripts for fish identification model
+ └── fish_id/       # Python fish identification model
 ```
 
 ---
@@ -159,21 +160,21 @@ tools/
 # 👨‍💻 Development Notes
 
 - The app automatically reloads during development.
-- Fonts are optimized using **next/font** with the **Geist** font family from Vercel.
-- The machine learning model runs locally through Python and is triggered via a Next.js API route.
+- Fonts are optimized using **next/font** with the Geist font family.
+- Fish recognition runs locally through Python and is triggered through a Next.js API route.
 
 ---
 
 # 🌟 Future Improvements
 
-Potential features for future development:
+Possible future features:
 
 - Cloud-based fish recognition
 - Gamified fish collection system
 - Achievements and badges for kids
 - Educational quizzes about marine life
-- Mobile-friendly version
-- Leaderboards for family fishing trips
+- Offline-friendly mobile version
+- Family fishing leaderboards
 
 ---
 
