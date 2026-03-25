@@ -19,8 +19,8 @@ Instead of waiting around, kids become active explorers discovering fish species
 # 🎥 Product Demo
 
 <p align="center">
-  <a href="https://youtu.be/q7PXBqnkq5w?si=vQ2-haqEbSm5yMlO">
-    <img src="https://img.youtube.com/vi/q7PXBqnkq5w/maxresdefault.jpg" width="800">
+  <a href="https://youtu.be/yXsIO4oxhOA?si=3T3GJyYhhHiwmxVB">
+    <img src="https://img.youtube.com/vi/yXsIO4oxhOA/maxresdefault.jpg" width="800">
   </a>
 </p>
 
